@@ -1,24 +1,19 @@
-from flask import Flask
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
-app = Flask(__name__)
 
+class PingHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot calisıyor!")
 
-@app.route("/")
-def home():
-    return "Bot çalışıyor! ✅"
-
-
-@app.route("/ping")
-def ping():
-    return "Pong! 🏓"
-
-
-def run():
-    app.run(host="0.0.0.0", port=5000)
+    def log_message(self, format, *args):
+        pass
 
 
 def keep_alive():
-    t = Thread(target=run)
+    server = HTTPServer(("0.0.0.0", 5000), PingHandler)
+    t = Thread(target=server.serve_forever)
     t.daemon = True
     t.start()
